@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/JS/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/JS/css/site.css">
+    <script src="/JS/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/JS/angular/angular.js"></script>
+    <script src="/JS/angular/angular_js_route.js"></script>
+    <script src="/JS/bootbox/bootbox.js"></script>
+    <script src="/JS/angular/angular_js_file_upload.js"></script>
+    <base href="/">
+</head>
+<body>
+    <div ng-app='myapp' ng-controller='mycontroller'>
+        <form name='myform' enctype="multipart/form-data" method="POST" ng-submit='myform.$valid && save(demo)'>
+            <input accept="image/*" required valid-file ng-model='demo.filevalue' type="file" name='filename'><br>
+            <div>
+                <div ng-show='myform.filename.$touched || myform.$submitted'>
+                    <div ng-hide='myform.filename.$valid'>
+                        <span style="color: red">select a file </span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <img style="width: 100px; height: 100px" src="{{demo.filevalue}}" alt="">
+            </div>
+            <input type="submit" value="submit">
+        </form>
+    </div>
+</body>
+<script>
+
+    angular.module('myapp' , [])
+        .controller('mycontroller' , function ($scope , $http) {
+            $scope.name = 'filename';
+            $scope.save = function (demo) {
+                $http({
+                    url : '/uploadfiles' , 
+                    method : 'POST' , 
+                    data : demo.filevalue , 
+                    'Content-Type':"application/x-www-form-urlencoded"
+                }).then(function (r) {
+                    console.log(r);
+                });
+                 
+            }
+        })
+        .directive("validFile", [function () {
+            return {
+                require : 'ngModel' , 
+                link: function (scope, element, attributes , ngModel) {
+                    element.bind("change", function (changeEvent) {
+                    var reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        scope.$apply(function () {
+                            //scope.fileread = loadEvent.target.result;
+                ///            console.log('value === ' + loadEvent.target.result); 
+                            ngModel.$setViewValue(loadEvent.target.result);
+                            ngModel.$render();
+                        });
+                    }
+                    reader.readAsDataURL(changeEvent.target.files[0]);
+                    });
+                }
+            }
+        }]);
+        /**.directive('validFile',function(){
+            return {
+                require:'ngModel',
+                link:function(scope,el,attrs,ngModel){
+                //change event is fired when file is selected
+                    el.bind('change',function(){
+                        scope.$apply(function(){
+                            console.log('path is' + el.val());
+                            ngModel.$setViewValue(el.val());
+                            ngModel.$render();
+                        })
+                    })
+                }
+            }
+        });**/ 
+</script>

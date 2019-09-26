@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/JS/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/JS/css/site.css">
+    <script src="/JS/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/JS/angular/angular.js"></script>
+    <script src="/JS/angular/angular_js_route.js"></script>
+    <script src="/JS/bootbox/bootbox.js"></script>
+    <script src="/JS/angular/ng-file-upload-all.js"></script>
+    <script src="/JS/angular/pagination.js"></script>
+    <base href="/">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="/">MyApp</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/fruits">Fruit</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary nav-link text-dark" href="/login">Log in</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-default nav-link text-dark" href="/signup">Sign up</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div ng-app='myApp'>
+    <ng-view></ng-view>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - MyApp - <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+</body>
+<script>
+    var app = angular.module("myApp", ["ngRoute" ,'ngFileUpload' , 'angularUtils.directives.dirPagination']);
+    app.config(function($routeProvider , $locationProvider) {
+    $routeProvider
+        .when('/login' , {
+            templateUrl : '/Fruit/login.html' , 
+            controller : 'loginController'
+        })
+        .when("/main", {
+            templateUrl : "/Fruit/main.html" , 
+            controller : 'mainc'
+        })
+        .when("/another", {
+            templateUrl : "/Fruit/another.html" , 
+            controller : 'anotherc'
+        })
+        .when('/create' , {
+            templateUrl : "/Fruit/create.html" , 
+            controller : 'formController'
+        })
+        .when ('/edit' , {
+            templateUrl : '/Fruit/edit.html' , 
+            controller : 'editController'
+        })
+        .otherwise({
+            redirectTo : '/main'
+        });
+        $locationProvider.html5Mode(true);
+    });
+
+    /**
+    * ID is a global varriable 
+    * It is used to carry the id of a product
+    * if any user manually goes to edit or details page 
+    * then Id = null
+    * and i will handle it separately
+    * otherwise it will be a valid id 
+    */
+    var ID;
+
+    app.controller('mainc' , function ($location , $scope , $http) {
+        $http({
+            url : '/api/fruits' , 
+            method : 'GET'
+        }).then ((data) => {
+            if (typeof(data.data) == 'string') {
+                console.log('this is working')
+                $location.path('login');
+            }
+            $scope.fruits = data.data;
+            console.log(typeof(data.data));
+            
+        });
+        /**$http({
+            url : '/api/photos/5d4306e34482a209bc535bed' , // id has been deleted 
+            method : 'GET'
+        }).then ((data) => {
+            console.log(data.data);
+            $scope.imageData = data.data;
+            
+        });**/
+        var clickTime = 0;
+        $scope.sort = function (prop) { 
+            $scope.key = prop; 
+            
+        }
+        
+        $scope.details = function (id) {
+            ID = id;
+            console.log(id);
+        }
+        $scope.edit = function (id) {
+            ID = id; 
+        }
+        $scope.delte = function (index , id) {
+            $http({
+                method : 'GET' , 
+                url : '/isloggedinuser'
+            })
+            console.log('index = ' + index + ' id = ' + id);
+            if (confirm('Are you sure you want to delete this fruit?')) {
+                $scope.fruits.splice(index , 1); /// removing row of table
+                $http({
+                    url : '/api/fruits/' + id , 
+                    method : 'DELETE'
+                }).then (() => {
+                    alert('delted');
+                });
+            } 
+        }
+    });
+
+    app.controller ('formController' , function ($scope , Upload , $timeout , $http , $location) {
+        $scope.message = 'Fill up the form';
+        
+        $scope.save = function (fruit) {
+            console.log(fruit.photo);
+            fruit.photo.upload = Upload.upload({
+                url : '/api/fruits' , 
+                method : 'POST' , 
+                data : {
+                    name : fruit.name , 
+                    taste : fruit.taste , 
+                    price : fruit.price , 
+                    origin : fruit.origin  , 
+                    fruitPhoto : fruit.photo
+                }
+            })
+            .then (function (data) {
+                console.log(data);
+                $location.path('/main');
+            });
+        }
+    }); 
+    
+    app.controller ('editController' , function ($scope , $http , $location , $timeout , Upload) {
+        if (!ID) {
+            console.log('id invalid');
+            $scope.check = function () {
+                $scope.message = 'your given id is invalid (400 Bad request)';
+                return true;
+            }
+        }
+        else {
+            $scope.message = 'Modify the form';
+        $http({
+            url : '/api/fruits/' + ID  , 
+            method : 'GET'
+        }).then ((data) => {
+            $scope.fruit = data.data;
+            console.log(data.data);
+        }); }
+
+        $scope.save = function (fruit) {
+            console.log(fruit);
+            // check whether file is uploaded or not
+            // if uploaded then send whole fruit
+            // otherwise splice photo property from fruit 
+            fruit.photo.upload = Upload.upload({
+                url : '/api/fruits/' + ID , 
+                method : 'PUT' , 
+                data : {
+                    name : fruit.name , 
+                    taste : fruit.taste , 
+                    price : fruit.price , 
+                    origin : fruit.origin  , 
+                    fruitPhoto : fruit.photo
+                }
+            })
+            .then (function (data) {
+                console.log(data);
+                $location.path('/main');
+            });
+        }
+    });
+
+    app.controller('anotherc' , function ($scope , $http) {
+       console.log('ID = ' + ID);
+        if (!ID) {
+            console.log('id invalid');
+            $scope.fruitById = {
+                'name' : "null" , taste : "null" ,
+                origin : 'null' , price : 0
+            }
+        }
+        else {
+        $http({
+            url : '/api/fruits/' + ID  , 
+            method : 'GET'
+        }).then ((data) => {
+            $scope.fruitById = data.data;
+            console.log(data.data);
+        }); }
+    });
+</script>
+</html>

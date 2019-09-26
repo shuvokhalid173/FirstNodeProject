@@ -1,0 +1,72 @@
+<style type="text/css">
+    .css-text input.ng-invalid.ng-touched {
+        border:1px solid red; 
+    }
+
+    .css-text input.ng-valid.ng-touched {
+        border:1px solid chartreuse;
+    }
+</style>
+
+<h1>{{message}}</h1>
+
+<div class="col-md-5">
+    <form name="form" novalidate class="css-text" ng-submit='form.$valid && save(fruit)'>
+        <div>
+            <label for="name">Name</label>
+            <input class="form-control" type="text" name="fname" ng-model='fruit.name' required="" id="">
+            <div ng-show='form.$submitted || form.fname.$touched'>
+                <div ng-hide='form.fname.$valid'>
+                    <span style="color: red">Name is required</span>
+                </div>
+            </div>
+        </div> 
+           
+        <div>
+            <label for="price">Price</label>
+            <input type="number" name="fprice" ng-model='fruit.price' class="form-control" required min="21">
+            <div ng-show='form.$submitted || form.fprice.$touched'>
+                <div ng-show='form.fprice.$error.required'>
+                    <span style="color: red">Price is required</span>
+                </div>
+                <div ng-show='form.fprice.$error.min'>
+                    <span style="color: red">Price should be gretter than 20</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="taste">Taste</label>
+            <input ng-model='fruit.taste' name="ftaste" type="text" class="form-control" required>
+            <div ng-show='form.$submitted || form.ftaste.$touched'>
+                <div ng-show='form.ftaste.$error.required'>
+                    <span style="color: red">Taste field is required</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="origin">Origin</label>
+            <input ng-model='fruit.origin' name="forigin" type="text" class="form-control">
+        </div>
+
+        <div>
+            <label for="photo">Photo</label>
+            <input accept="image/*" class="form-control" type="file" ngf-select ng-model="fruit.photo" 
+                name="fruitPhoto" ngf-max-size="2MB" required ngf-model-invalid="errorFile"> 
+            
+            <div ng-show='form.file.$touched || form.$submitted'>
+                <span style="color: red" ng-show="form.file.$error.required">Photo is required</span>
+                <span style="color: red" ng-show="form.file.$error.maxSize">File too large 
+                    {{errorFile.size / 1000000|number:1}}MB: max 2M</span>
+            </div>
+            <div>
+                <img ng-show="myForm.file.$valid" ngf-thumbnail="fruit.photo" style="width: 90px; height : 90px"> 
+            </div>
+        </div>
+        </br>
+
+        <input class="btn btn-primary" type="submit">
+        
+    </form>
+</div>

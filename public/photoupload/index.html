@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/JS/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/JS/css/site.css">
+    <script src="/JS/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/JS/angular/angular.js"></script>
+    <script src="/JS/angular/angular_js_route.js"></script>
+    <script src="/JS/bootbox/bootbox.js"></script>
+    <script src="/JS/angular/ng-file-upload-all.js"></script>
+
+    <style>
+        .thumb {
+            width: 80px;
+            height: 80px;
+            float: none;
+            position: relative;
+            top: 7px;
+        }
+    </style>
+</head>
+<body ng-app="fileUpload" ng-controller="MyCtrl">
+    <form name="myForm" ng-submit='myForm.$valid && uploadPic(demo)'>
+        <input type="file" ngf-select ng-model="demo.picFile" name="file"    
+                ngf-max-size="2MB" required
+               ngf-model-invalid="errorFile"> 
+               <div ng-show='myForm.file.$touched || myForm.$submitted'>
+        <i ng-show="myForm.file.$error.required">*required</i><br>
+        <i ng-show="myForm.file.$error.maxSize">File too large 
+            {{errorFile.size / 1000000|number:1}}MB: max 2M</i>
+            </div>
+        <img ng-show="myForm.file.$valid" ngf-thumbnail="demo.picFile" class="thumb"> 
+        <button ng-click="picFile = null" ng-show="picFile">Remove</button>
+        <br>
+        <input type="submit" value="submit">
+    </form>
+  </body>
+<script>
+    //inject angular file upload directives and services.
+var app = angular.module('fileUpload', ['ngFileUpload']);
+
+app.controller('MyCtrl', ['$scope', 'Upload', '$timeout', function ($scope, Upload, $timeout) {
+    $scope.uploadPic = function(demo) {
+        console.log(demo.picFile);
+        demo.picFile.upload = Upload.upload({
+        url: '/uploadfiles',
+        data: {file: demo.picFile},
+    }).then(function (r) {
+        console.log('this is form console'); 
+        console.log(r.data);
+    });
+    }
+}]);
+</script>
+
+</html>

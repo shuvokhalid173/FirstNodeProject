@@ -1,0 +1,34 @@
+
+
+<a href="create" class="btn btn-primary">Add new</a></br>
+<label for="search">Search</label>
+<input type="text" class="form-control col-sm-2" ng-model='SearchKey'><br>
+<table class="table table-bordered">
+    <thead>
+        <th>Photo</th>
+        <th ng-click='sort("name")'>Name</th>
+        <th ng-click='sort("taste")'>Taste</th>
+        <th ng-click='sort("origin")'>Origin</th>
+        <th ng-click='sort("price")'>Price</th>
+        <th>Action</th>
+    </thead>
+    <tbody>
+        <tr dir-paginate='fruit in fruits | orderBy:key:reverse | filter:SearchKey | itemsPerPage:3'>
+            <td><img style="width: 70px ; height: 70px;" src="data:{{fruit.photo.contentType}};base64,{{fruit.photo.data}}" alt=""></td>
+            <td>{{fruit.name}}</td>
+            <td>{{fruit.taste}}</td>
+            <td>{{fruit.origin}}</td>
+            <td>{{fruit.price}}</td>
+            <td>
+                <a href="/another" ng-click='details(fruit._id)' class="btn btn-primary" >Details</a>
+                <button  ng-click='delte($index , fruit._id)' class="btn btn-danger">Delete</button>
+                <a ng-click='edit(fruit._id)' class="btn btn-primary" href="/edit">Edit</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div>
+    <dir-pagination-controls direction-links='true' boundary-links='true' max-size='5'>
+        
+    </dir-pagination-controls>
+</div>

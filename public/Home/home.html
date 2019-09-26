@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/JS/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/JS/css/site.css">
+    <script src="/JS/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/JS/angular/angular.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="/">MyApp</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/fruits">Fruit</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            <div class="text-center" ng-app='myapp' ng-controller='mycontroller'>
+                <h1 class="display-4">Welcome</h1>
+                <form action="/action" name='myform'>
+                    <label style="color:{{color}}" for="name">{{value}}</label>
+                    <input  ng-model='namefield' name='name'required class="form-control" type="text">
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - MyApp - <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+</body>
+
+<script>
+    angular.module('myapp' , [])
+        .controller('mycontroller' , function ($scope) {
+            $scope.$watch('namefield' , function () {
+                if ($scope.namefield) {
+                    $scope.color = 'blue'; 
+                    $scope.value = 'valid go ahea d'; // rongon01310 
+                }
+                else {
+                    $scope.color = 'red';
+                    $scope.value = 'Name is required';
+                }
+            });
+        });
+</script>
+</html>

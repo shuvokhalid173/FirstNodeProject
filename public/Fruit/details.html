@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/JS/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/JS/css/site.css">
+    <script src="/JS/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/JS/angular/angular.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="/">MyApp</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/fruits">Fruit</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div id='divid' class="container" ng-app='MyApp' ng-controller='fruitsController'>
+        <h3>Fruit Details</h3>
+        
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - MyApp - <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+</body>
+<script>
+    console.log(URL());
+    var app = angular.module('MyApp' , []); 
+    app.controller ('fruitsController' , function ($scope , $http) {
+        $http.get('/api/fruits').then(function (response) {
+            console.log(response.data);
+            $scope.fruits = response.data;
+        }); 
+    }); 
+</script>
+</html>
